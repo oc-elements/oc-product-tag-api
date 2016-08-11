@@ -1,0 +1,34 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`oc-product-tag-api`
+Element to consume the Ordercloud local product tag API
+
+@demo demo/index.html 
+-->
+
+<dom-module id="oc-product-tag-api">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'oc-product-tag-api',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'oc-product-tag-api',
+        },
+      },
+
+    });
+  </script>
+</dom-module>
