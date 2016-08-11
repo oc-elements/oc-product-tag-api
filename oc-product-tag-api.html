@@ -1,34 +1,116 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../oc-core-utils/oc-api-provider-behaviour.html">
 
 <!--
 `oc-product-tag-api`
 Element to consume the Ordercloud local product tag API
-
-@demo demo/index.html 
 -->
 
 <dom-module id="oc-product-tag-api">
+
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]</h2>
+    <iron-ajax id="getTags"></iron-ajax>
+    <iron-ajax id="toggleEnabled"></iron-ajax>
+    <iron-ajax id="createTag"></iron-ajax>
+    <iron-ajax id="updateTag"></iron-ajax>
+    <iron-ajax id="deleteTag"></iron-ajax>
   </template>
 
   <script>
     Polymer({
-
       is: 'oc-product-tag-api',
+      behaviors: [OC.Behaviours.ApiProvider],
 
-      properties: {
-        prop1: {
-          type: String,
-          value: 'oc-product-tag-api',
-        },
+      /**
+       * Returns all the tags of the specified type of the organisation.
+       * @param {String} type
+       * @param {{
+       *  page: Number (default 1),
+       *  pageSize: Number (default 20),
+       *  showDisabled: Boolean (default false)
+       * }} criteria
+       * @returns {Promise}
+       */
+      getTags: function(type, criteria) {
+        this.$.getTags.url = this._url('product/tag/type/' + type);
+        this.$.getTags.params = {
+          'page': criteria.page || 1,
+          'pagesize': criteria.pageSize || 20,
+          'showDisabled': criteria.showDisabled || false
+        };
+        return this._generateRequest(this.$.getTags);
       },
+
+      /**
+       * Enables/Disables tag with the specified ID.
+       * @param {Number} id
+       * @param {Boolean} enabled
+       * @returns {Promise}
+       */
+      toggleEnabled: function(id, enabled) {
+        this.$.toggleEnabled.url = this._url('product/tag/' + id + '/change/' + (enabled ? 'enable' : 'disable'));
+        this.$.toggleEnabled.method = "PUT";
+        return this._generateRequest(this.$.toggleEnabled);
+      },
+
+      /**
+       * Create a tag
+       * @param {{
+       *  name: String,
+       *  description: String,
+       *  shortDescription: String
+       * }} tag
+       * @returns {Promise}
+       */
+      createTag: function(tag) {
+        this.$.createTag.url = this._url('product/tag');
+        this.$.createTag.method = "POST";
+        this.$.createTag.contentType = "application/json";
+        this.$.createTag.body = {
+          name: tag.name,
+          description: tag.description,
+          shortDescription: tag.shortDescription,
+          tagType: {name: tag.tagType},
+          organisation: {id: tag.organisationId}
+        };
+        return this._generateRequest(this.$.createTag);
+      },
+
+      /**
+       * Update a tag
+       * @param {{
+       *  id: Number,
+       *  name: String,
+       *  description: String,
+       *  shortDescription: String
+       * }} tag
+       * @returns {Promise}
+       */
+      updateTag: function(tag) {
+        this.$.updateTag.url = this._url('product/tag/' + tag.id);
+        this.$.updateTag.method = "PUT";
+        this.$.updateTag.contentType = "application/json";
+        this.$.updateTag.body = {
+          name: tag.name,
+          description: tag.description,
+          shortDescription: tag.shortDescription
+        };
+        return this._generateRequest(this.$.updateTag);
+      },
+
+      /**
+       * Delete a tag
+       * @param {Number} id The ID of the tag to delete.
+       * @returns {Promise}
+       */
+      deleteTag: function(id) {
+        this.$.deleteTag.url = this._url('product/tag/' + id);
+        this.$.deleteTag.method = "DELETE";
+        return this._generateRequest(this.$.deleteTag);
+      }
 
     });
   </script>
+
 </dom-module>
