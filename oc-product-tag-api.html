@@ -36,7 +36,7 @@ Element to consume the Ordercloud local product tag API
         this.$.getTags.url = this._url('product/tag/type/' + type);
         this.$.getTags.params = {
           'page': criteria.page || 1,
-          'pagesize': criteria.pageSize || 20,
+          'pagesize': criteria.pageSize || 10,
           'showDisabled': criteria.showDisabled || false
         };
         return this._generateRequest(this.$.getTags);
