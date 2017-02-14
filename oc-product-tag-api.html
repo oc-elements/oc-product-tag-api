@@ -11,6 +11,7 @@ Element to consume the Ordercloud local product tag API
 
   <template>
     <iron-ajax id="getTags"></iron-ajax>
+    <iron-ajax id="getAvailableTags"></iron-ajax>
     <iron-ajax id="toggleEnabled"></iron-ajax>
     <iron-ajax id="createTag"></iron-ajax>
     <iron-ajax id="updateTag"></iron-ajax>
@@ -41,6 +42,16 @@ Element to consume the Ordercloud local product tag API
         };
         return this._generateRequest(this.$.getTags);
       },
+
+      /**
+       * Return tags of a Product of an organisation
+       * @return {Promise}
+       */
+      getAvailableTags: function(productId) {
+        this.$.getAvailableProductTags.url = this._url('/product/tag/'+productId);
+        return this._generateRequest(this.$.getAvailableTags);
+      },
+
 
       /**
        * Enables/Disables tag with the specified ID.
