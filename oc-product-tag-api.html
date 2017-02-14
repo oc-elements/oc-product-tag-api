@@ -47,8 +47,8 @@ Element to consume the Ordercloud local product tag API
        * Return tags of a Product of an organisation
        * @return {Promise}
        */
-      getAvailableTags: function(productId) {
-        this.$.getAvailableProductTags.url = this._url('/product/tag/'+productId);
+      getAvailableTags: function() {
+        this.$.getAvailableProductTags.url = this._url('/product/tag/');
         return this._generateRequest(this.$.getAvailableTags);
       },
 
