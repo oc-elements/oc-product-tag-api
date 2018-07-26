@@ -9,129 +9,108 @@ Element to consume the Ordercloud local product tag API
 
 <dom-module id="oc-product-tag-api">
 
-  <template>
-    <iron-ajax id="getTagsByOrganisation"></iron-ajax>
-    <iron-ajax id="getTags"></iron-ajax>
-    <iron-ajax id="getAvailableTags"></iron-ajax>
-    <iron-ajax id="toggleEnabled"></iron-ajax>
-    <iron-ajax id="createTag"></iron-ajax>
-    <iron-ajax id="updateTag"></iron-ajax>
-    <iron-ajax id="deleteTag"></iron-ajax>
-  </template>
+	<template>
+		<iron-ajax id="getTagsByOrganisation"></iron-ajax>
+		<iron-ajax id="getTags"></iron-ajax>
+		<iron-ajax id="getTagById"></iron-ajax>
+		<iron-ajax id="getAvailableTags"></iron-ajax>
+		<iron-ajax id="toggleEnabled"></iron-ajax>
+		<iron-ajax id="createTag"></iron-ajax>
+		<iron-ajax id="updateTag"></iron-ajax>
+		<iron-ajax id="deleteTag"></iron-ajax>
+	</template>
 
-  <script>
-	  class OcProductTagApi extends Ordercloud.ApiMixin(Polymer.Element) {
-		  static get is() {
-			  return 'oc-product-tag-api';
-		  }
+	<script>
+		class OcProductTagApi extends Ordercloud.ApiMixin(Polymer.Element) {
+			static get is() {
+				return 'oc-product-tag-api';
+			}
 
-		  static get behaviours() {
-		  }
+			static get behaviours() {
+			}
 
-		  getTagsByOrganisation(organisationId) {
-			  this.$.getTagsByOrganisation.url = this._generateUrl("product/tag/organisation/" + organisationId);
-			  return this._generateRequest(this.$.getTagsByOrganisation);
-		  }
-		  /**
-		   * Returns all the tags of the specified type of the organisation.
-		   * @param {String} type
-		   * @param {{
-			 *  page: Number (default 1),
-			 *  pageSize: Number (default 20),
-			 *  showDisabled: Boolean (default false)
-			 * }} criteria
-		   * @returns {Promise}
-		   */
-		  getTags(type, criteria) {
-			  this.$.getTags.url = this._generateUrl('product/tag/type/' + type);
-			  this.$.getTags.params = {
-				  'page': criteria.page || 1,
-				  'pagesize': criteria.pageSize || 10,
-				  'showDisabled': criteria.showDisabled || false
-			  };
-			  return this._generateRequest(this.$.getTags);
-		  }
+			getTagsByOrganisation(organisationId) {
+				this.$.getTagsByOrganisation.url = this._generateUrl("product/tag/organisation/" + organisationId);
+				return this._generateRequest(this.$.getTagsByOrganisation);
+			}
 
-		  /**
-		   * Return tags of a Product of an organisation
-		   * @return {Promise}
-		   */
-		  getAvailableTags() {
-			  this.$.getAvailableTags.url = this._generateUrl('/product/tag');
-			  return this._generateRequest(this.$.getAvailableTags);
-		  }
+			getTags(type, criteria) {
+				this.$.getTags.url = this._generateUrl('product/tag/type/' + type);
+				this.$.getTags.params = {
+					'page': criteria.page || 1,
+					'pagesize': criteria.pageSize || 10,
+					'showDisabled': criteria.showDisabled || false
+				};
+				return this._generateRequest(this.$.getTags);
+			}
+
+			getTagById(id) {
+				this.$.getTagById.url = this._generateUrl(`product/tag/${id}`);
+				return this._generateRequest(this.$.getTagById);
+			}
+
+			/**
+			 * Return tags of a Product of an organisation
+			 * @return {Promise}
+			 */
+			getAvailableTags() {
+				this.$.getAvailableTags.url = this._generateUrl('/product/tag');
+				return this._generateRequest(this.$.getAvailableTags);
+			}
 
 
-		  /**
-		   * Enables/Disables tag with the specified ID.
-		   * @param {Number} id
-		   * @param {Boolean} enabled
-		   * @returns {Promise}
-		   */
-		  toggleEnabled(id, enabled) {
-			  this.$.toggleEnabled.url = this._generateUrl('product/tag/' + id + '/change/' + (enabled ? 'enable' : 'disable'));
-			  this.$.toggleEnabled.method = "PUT";
-			  return this._generateRequest(this.$.toggleEnabled);
-		  }
+			/**
+			 * Enables/Disables tag with the specified ID.
+			 * @param {Number} id
+			 * @param {Boolean} enabled
+			 * @returns {Promise}
+			 */
+			toggleEnabled(id, enabled) {
+				this.$.toggleEnabled.url = this._generateUrl('product/tag/' + id + '/change/' + (enabled ? 'enable' : 'disable'));
+				this.$.toggleEnabled.method = "PUT";
+				return this._generateRequest(this.$.toggleEnabled);
+			}
 
-		  /**
-		   * Create a tag
-		   * @param {{
-       *  name: String,
-       *  description: String,
-       *  shortDescription: String
-       * }} tag
-		   * @returns {Promise}
-		   */
-		  createTag(tag) {
-			  this.$.createTag.url = this._generateUrl('product/tag');
-			  this.$.createTag.method = "POST";
-			  this.$.createTag.contentType = "application/json";
-			  this.$.createTag.body = {
-				  name: tag.name,
-				  description: tag.description,
-				  shortDescription: tag.shortDescription,
-				  tagType: {name: tag.tagType},
-				  organisation: {id: tag.organisationId}
-			  };
-			  return this._generateRequest(this.$.createTag);
-		  }
+			createTag(tag) {
+				this.$.createTag.url = this._generateUrl('product/tag');
+				this.$.createTag.method = "POST";
+				this.$.createTag.contentType = "application/json";
+				this.$.createTag.body = {
+					name: tag.name,
+					description: tag.description,
+					shortDescription: tag.shortDescription,
+					tagType: { name: tag.tagType },
+					organisation: { id: tag.organisationId }
+				};
+				return this._generateRequest(this.$.createTag);
+			}
 
-		  /**
-		   * Update a tag
-		   * @param {{
-       *  id: Number,
-       *  name: String,
-       *  description: String,
-       *  shortDescription: String
-       * }} tag
-		   * @returns {Promise}
-		   */
-		  updateTag(tag) {
-			  this.$.updateTag.url = this._generateUrl('product/tag/' + tag.id);
-			  this.$.updateTag.method = "PUT";
-			  this.$.updateTag.contentType = "application/json";
-			  this.$.updateTag.body = {
-				  name: tag.name,
-				  description: tag.description,
-				  shortDescription: tag.shortDescription
-			  };
-			  return this._generateRequest(this.$.updateTag);
-		  }
+			updateTag(tag) {
+				this.$.updateTag.url = this._generateUrl('product/tag/' + tag.id);
+				this.$.updateTag.method = "PUT";
+				this.$.updateTag.contentType = "application/json";
+				this.$.updateTag.body = {
+					name: tag.name,
+					description: tag.description,
+					shortDescription: tag.shortDescription,
+					position: tag.position
+				};
+				return this._generateRequest(this.$.updateTag);
+			}
 
-		  /**
-		   * Delete a tag
-		   * @param {Number} id The ID of the tag to delete.
-		   * @returns {Promise}
-		   */
-		  deleteTag(id) {
-			  this.$.deleteTag.url = this._generateUrl('product/tag/' + id);
-			  this.$.deleteTag.method = "DELETE";
-			  return this._generateRequest(this.$.deleteTag);
-		  }
-	  }
+			/**
+			 * Delete a tag
+			 * @param {Number} id The ID of the tag to delete.
+			 * @returns {Promise}
+			 */
+			deleteTag(id) {
+				this.$.deleteTag.url = this._generateUrl('product/tag/' + id);
+				this.$.deleteTag.method = "DELETE";
+				return this._generateRequest(this.$.deleteTag);
+			}
+		}
 
-	  window.customElements.define(OcProductTagApi.is, OcProductTagApi);
-  </script>
+		window.customElements.define(OcProductTagApi.is, OcProductTagApi);
+	</script>
 
 </dom-module>
